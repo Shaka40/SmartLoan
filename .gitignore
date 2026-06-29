@@ -1,0 +1,1 @@
+node_modules/\n.vite/\ndist/\n.env\n__pycache__/\n*.py[cod]\n.venv/\nvenv/\n*.sqlite3\n.pytest_cache/\n.mypy_cache/\n.DS_Store
