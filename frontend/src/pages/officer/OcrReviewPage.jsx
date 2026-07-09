@@ -11,6 +11,7 @@ const reviewItems = [
 export default function OcrReviewPage() {
   return (
     <PageShell
+      role="officer"
       title="OCR Review"
       description="Inspect OCR results and decide whether documents are ready for further evaluation."
       badge={<><Sparkles className="h-4 w-4" /> Document review</>}

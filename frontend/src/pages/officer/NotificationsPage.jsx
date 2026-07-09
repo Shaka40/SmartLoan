@@ -2,18 +2,18 @@ import { Bell, Sparkles } from "lucide-react";
 import PageShell from "../../components/layout/PageShell";
 
 const notifications = [
-  { title: "Officer review backlog", detail: "12 applications await final approval." },
-  { title: "System maintenance", detail: "A scheduled maintenance window is planned for Friday." },
-  { title: "New student registrations", detail: "24 students completed onboarding today." },
+  { title: "New application assigned", detail: "A new student application is ready for your review." },
+  { title: "Document clarification request", detail: "One applicant has submitted a follow-up document." },
+  { title: "Fraud review reminder", detail: "A flagged case requires your attention today." },
 ];
 
-export default function AdminNotificationsPage() {
+export default function OfficerNotificationsPage() {
   return (
     <PageShell
-      role="admin"
+      role="officer"
       title="Notifications"
-      description="Monitor internal alerts and operational updates from the admin dashboard."
-      badge={<><Bell className="h-4 w-4" /> Admin alerts</>}
+      description="Stay aware of urgent officers tasks, application assignments, and review reminders."
+      badge={<><Bell className="h-4 w-4" /> Officer alerts</>}
     >
       <section className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="space-y-3">

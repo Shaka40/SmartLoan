@@ -1,11 +1,11 @@
 import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
 
-export default function PageShell({ title, description, badge, rightAction, children }) {
+export default function PageShell({ title, description, badge, rightAction, children, role = "student" }) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.12),_transparent_35%),linear-gradient(135deg,_#f8fbff_0%,_#f3f7ff_45%,_#eef4ff_100%)] text-slate-900">
       <div className="flex min-h-screen">
-        <Sidebar />
+        <Sidebar role={role} />
 
         <div className="flex-1">
           <TopNav />

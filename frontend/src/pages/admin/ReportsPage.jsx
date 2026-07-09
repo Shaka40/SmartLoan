@@ -10,6 +10,7 @@ const reports = [
 export default function ReportsPage() {
   return (
     <PageShell
+      role="admin"
       title="Reports"
       description="Generate and review important operational reports for the institution."
       badge={<><FileText className="h-4 w-4" /> Reporting tools</>}

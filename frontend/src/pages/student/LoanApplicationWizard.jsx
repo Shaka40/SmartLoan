@@ -36,11 +36,30 @@ const initialForm = {
   yearOfStudy: "3rd Year",
   gpa: "3.86",
   parentOccupation: "Small Business Owner",
+  parentEmploymentStatus: "Employed",
   parentIncome: "2,400,000",
   dependents: "4",
+  totalFamilyMembers: "6",
   orphanStatus: "No",
+  ritaDeathCode: "",
   disabilityStatus: "No",
+  disabilityDescription: "",
+  disabilityDocs: [],
+  specialCircumstances: {
+    singleParent: false,
+    guardianOnly: false,
+    parentWithDisability: false,
+    familyAffectedByNaturalDisaster: false,
+    other: "",
+  },
   sponsorship: "Self Sponsorship",
+  sponsorshipType: "No",
+  sponsorName: "",
+  sponsorshipAmount: "",
+  familyHouseOwnership: "Own House",
+  previousLoanReceived: "No",
+  previousLoanYear: "",
+  previousLoanAmount: "",
 };
 
 const initialUploads = [
@@ -89,6 +108,7 @@ function SelectField({ label, name, value, onChange, options }) {
 export default function LoanApplicationWizard() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState({});
   const [uploads, setUploads] = useState(initialUploads);
   const [submitted, setSubmitted] = useState(false);
 
@@ -97,8 +117,57 @@ export default function LoanApplicationWizard() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const toggleSpecial = (key) => {
+    setForm((prev) => ({
+      ...prev,
+      specialCircumstances: { ...prev.specialCircumstances, [key]: !prev.specialCircumstances[key] },
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setForm((prev) => ({ ...prev, disabilityDocs: [...prev.disabilityDocs, file.name] }));
+  };
+
+  const validateStep = (currentStep) => {
+    const newErrors = {};
+    if (currentStep === 0) {
+      if (!form.fullName) newErrors.fullName = "Full name is required";
+      if (!form.nationalId) newErrors.nationalId = "National ID is required";
+      if (!form.phone) newErrors.phone = "Phone is required";
+      if (!form.email) newErrors.email = "Email is required";
+    }
+    if (currentStep === 1) {
+      if (!form.institution) newErrors.institution = "Institution is required";
+      if (!form.regNumber) newErrors.regNumber = "Registration number is required";
+      if (!form.programme) newErrors.programme = "Programme is required";
+      if (!form.faculty) newErrors.faculty = "Faculty/School is required";
+      if (!form.yearOfStudy) newErrors.yearOfStudy = "Year of study is required";
+    }
+    if (currentStep === 2) {
+      if (!form.parentOccupation) newErrors.parentOccupation = "Parent occupation is required";
+      if (!form.parentIncome) newErrors.parentIncome = "Parent income is required";
+      if (!form.dependents) newErrors.dependents = "Number of dependents is required";
+      if (!form.totalFamilyMembers) newErrors.totalFamilyMembers = "Total family members is required";
+      if (!form.orphanStatus) newErrors.orphanStatus = "Orphan status is required";
+      if (form.orphanStatus === "Yes" && !form.ritaDeathCode) newErrors.ritaDeathCode = "RITA death code is required";
+      if (!form.disabilityStatus) newErrors.disabilityStatus = "Disability status is required";
+      if (form.disabilityStatus === "Yes" && !form.disabilityDescription) newErrors.disabilityDescription = "Please describe the disability";
+      if (!form.sponsorshipType) newErrors.sponsorshipType = "Please select sponsorship option";
+      if (form.sponsorshipType !== "No" && !form.sponsorName) newErrors.sponsorName = "Sponsor name is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
+
+  const handleNext = () => {
+    if (validateStep(step)) nextStep();
+  };
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -227,9 +296,27 @@ export default function LoanApplicationWizard() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <Field label="Institution" name="institution" value={form.institution} onChange={updateField} />
                     <Field label="Registration Number" name="regNumber" value={form.regNumber} onChange={updateField} />
-                    <Field label="Programme" name="programme" value={form.programme} onChange={updateField} />
-                    <Field label="Faculty" name="faculty" value={form.faculty} onChange={updateField} />
-                    <Field label="Year of Study" name="yearOfStudy" value={form.yearOfStudy} onChange={updateField} />
+                    <SelectField
+                      label="Programme"
+                      name="programme"
+                      value={form.programme}
+                      onChange={updateField}
+                      options={["Computer Science", "Business Studies", "Engineering", "Law", "Medicine"]}
+                    />
+                    <SelectField
+                      label="Faculty / School"
+                      name="faculty"
+                      value={form.faculty}
+                      onChange={updateField}
+                      options={["College of ICT", "College of Business", "College of Engineering", "College of Law", "College of Health"]}
+                    />
+                    <SelectField
+                      label="Year of Study"
+                      name="yearOfStudy"
+                      value={form.yearOfStudy}
+                      onChange={updateField}
+                      options={["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"]}
+                    />
                     <Field label="GPA" name="gpa" value={form.gpa} onChange={updateField} />
                   </div>
                 </div>
@@ -248,9 +335,23 @@ export default function LoanApplicationWizard() {
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <Field label="Parent Occupation" name="parentOccupation" value={form.parentOccupation} onChange={updateField} />
-                    <Field label="Parent Income (TZS)" name="parentIncome" value={form.parentIncome} onChange={updateField} />
+                    <SelectField
+                      label="Parent / Guardian Occupation"
+                      name="parentOccupation"
+                      value={form.parentOccupation}
+                      onChange={updateField}
+                      options={["Teacher", "Small Business Owner", "Civil Servant", "Farmer", "Unemployed", "Other"]}
+                    />
+                    <SelectField
+                      label="Parent / Guardian Employment Status"
+                      name="parentEmploymentStatus"
+                      value={form.parentEmploymentStatus}
+                      onChange={updateField}
+                      options={["Employed", "Self-employed", "Farmer", "Casual Worker", "Unemployed", "Retired"]}
+                    />
+                    <Field label="Parent Monthly Income (TZS)" name="parentIncome" value={form.parentIncome} onChange={updateField} />
                     <Field label="Number of Dependents" name="dependents" value={form.dependents} onChange={updateField} />
+                    <Field label="Total Number of Family Members" name="totalFamilyMembers" value={form.totalFamilyMembers} onChange={updateField} />
                     <SelectField
                       label="Orphan Status"
                       name="orphanStatus"
@@ -265,7 +366,99 @@ export default function LoanApplicationWizard() {
                       onChange={updateField}
                       options={["No", "Yes"]}
                     />
-                    <Field label="Other Sponsorship" name="sponsorship" value={form.sponsorship} onChange={updateField} />
+                    <SelectField
+                      label="House ownership"
+                      name="familyHouseOwnership"
+                      value={form.familyHouseOwnership}
+                      onChange={updateField}
+                      options={["Own House", "Rental House", "Employer Provided", "Other"]}
+                    />
+                  </div>
+
+                  {form.orphanStatus === "Yes" && (
+                    <div>
+                      <Field label="RITA Death Verification Code" name="ritaDeathCode" value={form.ritaDeathCode} onChange={updateField} />
+                      {errors.ritaDeathCode ? <p className="text-rose-600 text-xs mt-1">{errors.ritaDeathCode}</p> : null}
+                    </div>
+                  )}
+
+                  {form.disabilityStatus === "Yes" && (
+                    <div className="space-y-2">
+                      <label className="block">
+                        <span className="mb-2 block text-sm font-medium text-slate-700">Describe disability</span>
+                        <textarea name="disabilityDescription" value={form.disabilityDescription} onChange={updateField} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none" />
+                      </label>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700">Upload supporting document</label>
+                        <input type="file" onChange={handleFileChange} className="mt-2" />
+                        {form.disabilityDocs.length > 0 ? (
+                          <p className="mt-2 text-sm text-slate-600">Files: {form.disabilityDocs.join(", ")}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-3">
+                    <p className="mb-2 block text-sm font-medium text-slate-700">Special circumstances</p>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <input type="checkbox" checked={form.specialCircumstances.singleParent} onChange={() => toggleSpecial("singleParent")} />
+                        <span className="text-sm">Single Parent</span>
+                      </label>
+                      <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <input type="checkbox" checked={form.specialCircumstances.guardianOnly} onChange={() => toggleSpecial("guardianOnly")} />
+                        <span className="text-sm">Guardian Only</span>
+                      </label>
+                      <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <input type="checkbox" checked={form.specialCircumstances.parentWithDisability} onChange={() => toggleSpecial("parentWithDisability")} />
+                        <span className="text-sm">Parent with Disability</span>
+                      </label>
+                      <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <input type="checkbox" checked={form.specialCircumstances.familyAffectedByNaturalDisaster} onChange={() => toggleSpecial("familyAffectedByNaturalDisaster")} />
+                        <span className="text-sm">Family Affected by Natural Disaster</span>
+                      </label>
+                      <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <input type="checkbox" checked={!!form.specialCircumstances.other} onChange={() => setForm((p) => ({ ...p, specialCircumstances: { ...p.specialCircumstances, other: p.specialCircumstances.other ? "" : "Other" } }))} />
+                        <span className="text-sm">Other</span>
+                      </label>
+                    </div>
+                    {form.specialCircumstances.other !== "" && (
+                      <div className="mt-2">
+                        <input name="specialOtherText" placeholder="Describe" value={form.specialCircumstances.other === "Other" ? form.specialCircumstances.otherText ?? "" : form.specialCircumstances.otherText ?? ""} onChange={(e) => setForm((p) => ({ ...p, specialCircumstances: { ...p.specialCircumstances, otherText: e.target.value } }))} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <p className="mb-2 block text-sm font-medium text-slate-700">Do you currently receive financial support?</p>
+                    <select name="sponsorshipType" value={form.sponsorshipType} onChange={updateField} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                      <option>No</option>
+                      <option>Government</option>
+                      <option>NGO</option>
+                      <option>Scholarship</option>
+                      <option>Employer</option>
+                      <option>Relative</option>
+                    </select>
+                    {form.sponsorshipType !== "No" && (
+                      <div className="mt-3 grid gap-3 md:grid-cols-2">
+                        <Field label="Sponsor Name" name="sponsorName" value={form.sponsorName} onChange={updateField} />
+                        <Field label="Sponsorship Amount (TZS / year)" name="sponsorshipAmount" value={form.sponsorshipAmount} onChange={updateField} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <p className="mb-2 block text-sm font-medium text-slate-700">Previous loan history</p>
+                    <select name="previousLoanReceived" value={form.previousLoanReceived} onChange={updateField} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                      <option>No</option>
+                      <option>Yes</option>
+                    </select>
+                    {form.previousLoanReceived === "Yes" && (
+                      <div className="mt-3 grid gap-3 md:grid-cols-2">
+                        <Field label="Previous Academic Year" name="previousLoanYear" value={form.previousLoanYear} onChange={updateField} />
+                        <Field label="Previous Loan Amount (TZS)" name="previousLoanAmount" value={form.previousLoanAmount} onChange={updateField} />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -341,9 +534,102 @@ export default function LoanApplicationWizard() {
                             <p className="mt-1 font-medium text-slate-900">{form.programme}</p>
                           </div>
                           <div>
-                            <p className="text-slate-400">Estimated Neediness</p>
-                            <p className="mt-1 font-medium text-slate-900">High • Priority Review</p>
+                            <p className="text-slate-400">Faculty / School</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.faculty}</p>
                           </div>
+                          <div>
+                            <p className="text-slate-400">Year of Study</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.yearOfStudy}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">GPA</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.gpa}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-slate-400">Parent / Guardian Occupation</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.parentOccupation}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Employment Status</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.parentEmploymentStatus}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Parent Monthly Income</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.parentIncome}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Dependents</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.dependents}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Total Family Members</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.totalFamilyMembers}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-slate-400">Orphan Status</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.orphanStatus}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400">Disability Status</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.disabilityStatus}</p>
+                          </div>
+                          {form.disabilityStatus === "Yes" && (
+                            <div>
+                              <p className="text-slate-400">Disability Details</p>
+                              <p className="mt-1 font-medium text-slate-900">{form.disabilityDescription}</p>
+                            </div>
+                          )}
+
+                          <div>
+                            <p className="text-slate-400">Special Circumstances</p>
+                            <p className="mt-1 font-medium text-slate-900">
+                              {Object.entries(form.specialCircumstances)
+                                .filter(([k, v]) => k === "other" ? !!form.specialCircumstances.otherText : v)
+                                .map(([k, v]) => (k === "other" ? form.specialCircumstances.otherText : k.replace(/([A-Z])/g, " $1")))
+                                .join(", ") || "—"}
+                            </p>
+                          </div>
+
+                          <div>
+                            <p className="text-slate-400">Sponsorship</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.sponsorshipType}</p>
+                          </div>
+                          {form.sponsorshipType !== "No" && (
+                            <>
+                              <div>
+                                <p className="text-slate-400">Sponsor Name</p>
+                                <p className="mt-1 font-medium text-slate-900">{form.sponsorName}</p>
+                              </div>
+                              <div>
+                                <p className="text-slate-400">Sponsorship Amount (TZS/year)</p>
+                                <p className="mt-1 font-medium text-slate-900">{form.sponsorshipAmount}</p>
+                              </div>
+                            </>
+                          )}
+
+                          <div>
+                            <p className="text-slate-400">Family House Ownership</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.familyHouseOwnership}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-slate-400">Previous Loan Received</p>
+                            <p className="mt-1 font-medium text-slate-900">{form.previousLoanReceived}</p>
+                          </div>
+                          {form.previousLoanReceived === "Yes" && (
+                            <>
+                              <div>
+                                <p className="text-slate-400">Previous Academic Year</p>
+                                <p className="mt-1 font-medium text-slate-900">{form.previousLoanYear}</p>
+                              </div>
+                              <div>
+                                <p className="text-slate-400">Previous Loan Amount</p>
+                                <p className="mt-1 font-medium text-slate-900">{form.previousLoanAmount}</p>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
 

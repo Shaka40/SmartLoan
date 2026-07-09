@@ -2,8 +2,8 @@ import { ArrowDownToLine, BarChart3, Brain, CircleDollarSign, TrendingUp } from 
 import PageShell from "../../components/layout/PageShell";
 
 const factors = [
-  { label: "Academic performance", value: 32, color: "bg-slate-900" },
-  { label: "Financial need", value: 28, color: "bg-blue-600" },
+  { label: "Financial need", value: 32, color: "bg-slate-900" },
+  { label: "Academic performance", value: 28, color: "bg-blue-600" },
   { label: "Household stability", value: 20, color: "bg-emerald-600" },
   { label: "Document quality", value: 20, color: "bg-amber-500" },
 ];

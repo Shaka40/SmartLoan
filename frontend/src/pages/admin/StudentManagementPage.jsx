@@ -10,6 +10,7 @@ const students = [
 export default function StudentManagementPage() {
   return (
     <PageShell
+      role="admin"
       title="Student Management"
       description="Monitor student records, account activity, and application progress from one place."
       badge={<><GraduationCap className="h-4 w-4" /> Student oversight</>}

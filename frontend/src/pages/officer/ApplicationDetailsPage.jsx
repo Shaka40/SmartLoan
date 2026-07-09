@@ -13,6 +13,7 @@ const details = [
 export default function ApplicationDetailsPage() {
   return (
     <PageShell
+      role="officer"
       title="Application Details"
       description="Inspect a single student application in detail before making a final decision."
       badge={<><FileText className="h-4 w-4" /> Review detail</>}

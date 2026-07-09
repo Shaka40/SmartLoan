@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Welcome from "../pages/Welcome";
+import RoleSelectionPage from "../pages/RoleSelectionPage";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import StudentDashboard from "../pages/student/StudentDashboard";
@@ -16,6 +17,10 @@ import ApplicationDetailsPage from "../pages/officer/ApplicationDetailsPage";
 import OcrReviewPage from "../pages/officer/OcrReviewPage";
 import FraudDetectionPage from "../pages/officer/FraudDetectionPage";
 import AiRecommendationPage from "../pages/officer/AiRecommendationPage";
+import ApproveRejectPage from "../pages/officer/ApproveRejectPage";
+import GenerateReportsPage from "../pages/officer/GenerateReportsPage";
+import OfficerNotificationsPage from "../pages/officer/NotificationsPage";
+import OfficerProfilePage from "../pages/officer/ProfilePage";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import UserManagementPage from "../pages/admin/UserManagementPage";
 import StudentManagementPage from "../pages/admin/StudentManagementPage";
@@ -32,6 +37,7 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Welcome />} />
+        <Route path="/role-selection" element={<RoleSelectionPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
@@ -48,6 +54,10 @@ export default function AppRouter() {
         <Route path="/officer/ocr-review" element={<OcrReviewPage />} />
         <Route path="/officer/fraud" element={<FraudDetectionPage />} />
         <Route path="/officer/ai-recommendation" element={<AiRecommendationPage />} />
+        <Route path="/officer/approve-reject" element={<ApproveRejectPage />} />
+        <Route path="/officer/reports" element={<GenerateReportsPage />} />
+        <Route path="/officer/notifications" element={<OfficerNotificationsPage />} />
+        <Route path="/officer/profile" element={<OfficerProfilePage />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UserManagementPage />} />
         <Route path="/admin/students" element={<StudentManagementPage />} />

@@ -10,6 +10,7 @@ const fraudFindings = [
 export default function FraudDetectionPage() {
   return (
     <PageShell
+      role="officer"
       title="Fraud Detection Results"
       description="Inspect fraud risk indicators to support a safe and equitable review process."
       badge={<><ShieldCheck className="h-4 w-4" /> Risk analysis</>}

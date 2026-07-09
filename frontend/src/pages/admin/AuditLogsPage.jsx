@@ -10,6 +10,7 @@ const logs = [
 export default function AuditLogsPage() {
   return (
     <PageShell
+      role="admin"
       title="Audit Logs"
       description="Review recent sensitive actions and maintain accountability across the platform."
       badge={<><ShieldCheck className="h-4 w-4" /> Security history</>}

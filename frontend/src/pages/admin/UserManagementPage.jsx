@@ -10,6 +10,7 @@ const users = [
 export default function UserManagementPage() {
   return (
     <PageShell
+      role="admin"
       title="User Management"
       description="View, manage, and review user roles across the SmartLoan AI platform."
       badge={<><Users className="h-4 w-4" /> Role administration</>}

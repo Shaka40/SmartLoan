@@ -16,6 +16,7 @@ const queue = [
 export default function OfficerDashboard() {
   return (
     <PageShell
+      role="officer"
       title="Loan Officer Dashboard"
       description="Review student applications, inspect AI recommendations, and make final decisions with confidence."
       badge={<><ShieldCheck className="h-4 w-4" /> Officer workspace</>}

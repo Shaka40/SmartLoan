@@ -10,6 +10,7 @@ const officers = [
 export default function OfficerManagementPage() {
   return (
     <PageShell
+      role="admin"
       title="Loan Officer Management"
       description="Manage loan officer accounts, availability, and assignment load."
       badge={<><Users className="h-4 w-4" /> Officer oversight</>}

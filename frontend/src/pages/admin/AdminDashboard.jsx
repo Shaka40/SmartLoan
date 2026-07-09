@@ -10,6 +10,7 @@ const stats = [
 export default function AdminDashboard() {
   return (
     <PageShell
+      role="admin"
       title="Admin Dashboard"
       description="Monitor platform activity, manage roles, and oversee institutional performance."
       badge={<><ShieldCheck className="h-4 w-4" /> Admin control center</>}

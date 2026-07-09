@@ -4,6 +4,7 @@ import PageShell from "../../components/layout/PageShell";
 export default function AnalyticsDashboardPage() {
   return (
     <PageShell
+      role="admin"
       title="Analytics Dashboard"
       description="Track approval trends, system demand, and regional performance insights."
       badge={<><BarChart3 className="h-4 w-4" /> Insight portal</>}

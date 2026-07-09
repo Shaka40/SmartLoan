@@ -10,6 +10,7 @@ const applications = [
 export default function ApplicationListPage() {
   return (
     <PageShell
+      role="officer"
       title="Application List"
       description="Review incoming student loan applications and prioritize follow-up actions."
       badge={<><Eye className="h-4 w-4" /> Officer queue</>}

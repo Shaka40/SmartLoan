@@ -10,6 +10,7 @@ const settings = [
 export default function SystemSettingsPage() {
   return (
     <PageShell
+      role="admin"
       title="System Settings"
       description="Configure core platform behavior and maintain control over the review environment."
       badge={<><Settings className="h-4 w-4" /> Platform configuration</>}

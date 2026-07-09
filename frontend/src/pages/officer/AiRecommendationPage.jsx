@@ -4,6 +4,7 @@ import PageShell from "../../components/layout/PageShell";
 export default function AiRecommendationPage() {
   return (
     <PageShell
+      role="officer"
       title="AI Recommendation"
       description="View the final AI assessment and support your review with transparent insights."
       badge={<><Brain className="h-4 w-4" /> AI support</>}
