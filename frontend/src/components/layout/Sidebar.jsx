@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -11,16 +12,16 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Loan Application", icon: FileText },
-  { label: "Application Progress", icon: BarChart3 },
-  { label: "My Documents", icon: FolderOpen },
-  { label: "AI Decision Explanation", icon: Sparkles },
-  { label: "Loan Status", icon: BarChart3 },
-  { label: "Notifications", icon: Bell },
-  { label: "Profile", icon: User },
-  { label: "Settings", icon: Settings },
-  { label: "Logout", icon: LogOut },
+  { label: "Dashboard", icon: LayoutDashboard, active: true, path: "/student/dashboard" },
+  { label: "Loan Application", icon: FileText, path: "/student/application" },
+  { label: "Application Progress", icon: BarChart3, path: "/student/status" },
+  { label: "My Documents", icon: FolderOpen, path: "/student/ocr-verification" },
+  { label: "AI Decision Explanation", icon: Sparkles, path: "/student/ai-decision" },
+  { label: "Loan Status", icon: BarChart3, path: "/student/status" },
+  { label: "Notifications", icon: Bell, path: "/student/notifications" },
+  { label: "Profile", icon: User, path: "/student/profile" },
+  { label: "Settings", icon: Settings, path: "/student/settings" },
+  { label: "Logout", icon: LogOut, path: "/" },
 ];
 
 export default function Sidebar() {
@@ -40,8 +41,9 @@ export default function Sidebar() {
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
-            <button
+            <Link
               key={item.label}
+              to={item.path}
               className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-medium transition ${
                 item.active
                   ? "bg-slate-900 text-white shadow-sm"
@@ -50,7 +52,7 @@ export default function Sidebar() {
             >
               <Icon className="h-4 w-4" />
               <span>{item.label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>
