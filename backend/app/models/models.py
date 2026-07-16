@@ -36,7 +36,6 @@ class LoanApplication(Base):
     applicant = relationship("User", back_populates="applications")
     documents = relationship("Document", back_populates="application")
     reviews = relationship("ApplicationReview", back_populates="application")
-    audit_logs = relationship("AuditLog", back_populates="application")
 
 class Document(Base):
     __tablename__ = "documents"

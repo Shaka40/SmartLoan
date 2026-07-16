@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -106,11 +106,14 @@ function SelectField({ label, name, value, onChange, options }) {
 }
 
 export default function LoanApplicationWizard() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [uploads, setUploads] = useState(initialUploads);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -169,9 +172,63 @@ export default function LoanApplicationWizard() {
     if (validateStep(step)) nextStep();
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    // TODO: replace this mock submission with a FastAPI-backed application endpoint later.
+  const handleSubmit = async () => {
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        institution: form.institution,
+        registration_number: form.regNumber,
+        programme: form.programme,
+        faculty: form.faculty,
+        year_of_study: form.yearOfStudy,
+        gpa: form.gpa,
+        parent_guardian_occupation: form.parentOccupation,
+        parent_guardian_employment_status: form.parentEmploymentStatus,
+        parent_monthly_income: form.parentIncome,
+        dependents: Number(form.dependents),
+        total_family_members: Number(form.totalFamilyMembers),
+        orphan_status: form.orphanStatus,
+        rita_death_code: form.ritaDeathCode || null,
+        disability_status: form.disabilityStatus,
+        disability_description: form.disabilityDescription || null,
+        family_house_ownership: form.familyHouseOwnership,
+        sponsorship_type: form.sponsorshipType,
+        sponsor_name: form.sponsorName || null,
+        sponsorship_amount: form.sponsorshipAmount || null,
+        previous_loan_received: form.previousLoanReceived,
+        previous_loan_year: form.previousLoanYear || null,
+        previous_loan_amount: form.previousLoanAmount || null,
+        special_circumstances: form.specialCircumstances,
+      };
+
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch("http://127.0.0.1:8000/api/loan-applications/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.detail || "Submission failed");
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error.message || "Submission failed");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progressPercent = ((step + 1) / steps.length) * 100;
@@ -633,12 +690,16 @@ export default function LoanApplicationWizard() {
                         </div>
                       </div>
 
-                      <button
-                        onClick={handleSubmit}
-                        className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-                      >
-                        Submit Application
-                      </button>
+                      <div className="space-y-2">
+                        {submitError ? <p className="text-sm text-rose-600">{submitError}</p> : null}
+                        <button
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {isSubmitting ? "Submitting..." : "Submit Application"}
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-800">
