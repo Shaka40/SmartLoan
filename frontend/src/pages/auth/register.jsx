@@ -7,6 +7,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +22,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const data = await registerUser(email, password);
+      const data = await registerUser(email, password, role);
       localStorage.setItem("access_token", data.access_token);
       navigate("/student/application");
     } catch (err) {
@@ -81,6 +82,19 @@ const Register = () => {
                   placeholder="••••••••"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-slate-400">Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none ring-0"
+                >
+                  <option value="student">Student</option>
+                  <option value="officer">Officer</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
             </div>
             {error ? <p className="mt-3 text-sm text-rose-400">{error}</p> : null}

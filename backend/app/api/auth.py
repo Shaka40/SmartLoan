@@ -8,24 +8,43 @@ from app.models.models import User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 def login(payload: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
     token = create_access_token({"user_id": str(user.id), "role": user.role})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "user_id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        }
+    }
 
-@router.post("/register", response_model=Token)
+@router.post("/register")
 def register(payload: UserLogin, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = get_password_hash(payload.password)
     username = payload.email.split("@")[0]
-    user = User(username=username, email=payload.email, password_hash=hashed_password, role="student")
+    role = payload.role or "student"
+    user = User(username=username, email=payload.email, password_hash=hashed_password, role=role)
     db.add(user)
     db.commit()
     db.refresh(user)
     token = create_access_token({"user_id": str(user.id), "role": user.role})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "user_id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        }
+    }

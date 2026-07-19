@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import TopNav from "../../components/layout/TopNav";
 import StatCard from "../../components/dashboard/StatCard";
@@ -6,8 +7,27 @@ import NotificationsPanel from "../../components/dashboard/NotificationsPanel";
 import ProfileSummary from "../../components/dashboard/ProfileSummary";
 import OcrVerificationCard from "../../components/dashboard/OcrVerificationCard";
 import ApplicationIntegrityCard from "../../components/dashboard/ApplicationIntegrityCard";
+import { request } from "../../services/api";
 
 export default function StudentDashboard() {
+  const [application, setApplication] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadApplication() {
+      try {
+        const data = await request('/api/loan-applications/');
+        setApplication(data[0] || null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadApplication();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.12),_transparent_35%),linear-gradient(135deg,_#f8fbff_0%,_#f3f7ff_45%,_#eef4ff_100%)] text-slate-900">
       <div className="flex min-h-screen">
@@ -22,23 +42,23 @@ export default function StudentDashboard() {
                 <div>
                   <p className="text-sm font-medium text-slate-300">Welcome back</p>
                   <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-                    Ahmadi Abasi
+                    {loading ? "Loading..." : application?.institution || "Student"}
                   </h1>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                    Third-year Computer Science student • Your current application is under AI review and moving smoothly through the pipeline.
+                    {loading ? "Fetching your latest application..." : application ? `Application ${application.status || 'submitted'} • ${application.programme || 'review in progress'}` : 'You have no applications yet. Start one from the wizard.'}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur">
                   <p className="text-sm text-slate-300">Current application status</p>
-                  <p className="mt-1 text-lg font-semibold">Pending Officer Review</p>
+                  <p className="mt-1 text-lg font-semibold">{loading ? 'Loading...' : application?.status || 'No application yet'}</p>
                 </div>
               </div>
             </section>
 
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <StatCard title="Application Status" value="74%" subtitle="Progress complete" tone="blue" />
-              <StatCard title="Verification Status" value="Verified" subtitle="3 of 3 checks passed" tone="emerald" />
-              <StatCard title="Loan Decision" value="Eligible" subtitle="Priority review" tone="amber" />
+              <StatCard title="Application Status" value={application ? (application.status || 'Submitted') : 'No application'} subtitle={application ? 'Latest application found' : 'Start your first application'} tone="blue" />
+              <StatCard title="Institution" value={application?.institution || '—'} subtitle="Registered school" tone="emerald" />
+              <StatCard title="Requested Amount" value={application?.requested_amount ? `TZS ${application.requested_amount}` : '—'} subtitle="Amount requested" tone="amber" />
             </section>
 
             <section className="grid gap-6 xl:grid-cols-2">

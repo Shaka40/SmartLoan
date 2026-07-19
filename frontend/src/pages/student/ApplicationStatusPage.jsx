@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { CheckCircle2, CircleDashed, ShieldCheck, Sparkles, UserRoundCheck } from "lucide-react";
 import PageShell from "../../components/layout/PageShell";
+import { request } from "../../services/api";
 
 const stages = [
   { title: "Application Submitted", detail: "Your request entered the system successfully", status: "done" },
@@ -12,6 +14,24 @@ const stages = [
 ];
 
 export default function ApplicationStatusPage() {
+  const [application, setApplication] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadApplication() {
+      try {
+        const data = await request('/api/loan-applications/');
+        setApplication(data[0] || null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadApplication();
+  }, []);
+
   return (
     <PageShell
       title="Application Status"
@@ -34,7 +54,7 @@ export default function ApplicationStatusPage() {
             <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-700">Status update</p>
               <p className="mt-2 text-sm leading-6 text-emerald-700">
-                OCR verification is complete and the application is now entering the fraud and AI evaluation review stages.
+                {loading ? 'Loading your latest application...' : application ? `Latest status: ${application.status || 'submitted'}` : 'You do not have an application yet.'}
               </p>
             </div>
           </div>
